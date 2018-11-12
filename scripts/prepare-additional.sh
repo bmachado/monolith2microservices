@@ -14,14 +14,15 @@ oc export template jenkins-ephemeral -n openshift -o json | sed 's/jenkins:lates
 # import Monolith templates and JBoss Imagestreams
 #oc create -n openshift -f https://raw.githubusercontent.com/RedHat-Middleware-Workshops/modernize-apps-labs/master/monolith/src/main/openshift/template-binary.json
 #oc create -n openshift -f https://raw.githubusercontent.com/RedHat-Middleware-Workshops/modernize-apps-labs/master/monolith/src/main/openshift/template-prod.json
-oc create -n openshift -f https://raw.githubusercontent.com/bmachado/monolith2microservices/master/monolith/src/main/openshift/template-prod.json
+oc create -n openshift -f https://raw.githubusercontent.com/bmachado/monolith2microservices/master/monolith/src/main/openshift/template-binary.json
 oc create -n openshift -f https://raw.githubusercontent.com/bmachado/monolith2microservices/master/monolith/src/main/openshift/template-prod.json
 
 # Disable namespace ownership for router
 oc env dc/router ROUTER_DISABLE_NAMESPACE_OWNERSHIP_CHECK=true -n default
 
 echo "Importing images" 
-for is in {"registry.access.redhat.com/jboss-eap-7/eap71-openshift","registry.access.redhat.com/rhscl/postgresql-94-rhel7","registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift"}
+oc import-image registry.access.redhat.com/jboss-eap-7/eap71-openshift  --all --confirm --as=system:admin -n openshift
+for is in {"registry.access.redhat.com/rhscl/postgresql-94-rhel7","registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift"}
 do 
   oc import-image $is --all --confirm --as=system:admin 
 done
